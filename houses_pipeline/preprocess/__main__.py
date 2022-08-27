@@ -16,6 +16,9 @@ from sklearn.preprocessing import FunctionTransformer
 # internal modules
 from houses_pipeline.transformers import Pandalizer
 from houses_pipeline import constants
+from houses_pipeline.config.logging import LoggingHandler
+
+logger = LoggingHandler.get_logger(__name__)
 
 
 @click.command()
@@ -39,7 +42,6 @@ from houses_pipeline import constants
 )
 def main(input_filepath: str, output_filepath: str, verbose: bool):
     """Preprocess the dataset and turn it from the given input to the output"""
-    logger = logging.getLogger(__name__)
     # click.echo() or logger.info?
     logger.info("Transforming %s to %s", input_filepath, output_filepath)
 
