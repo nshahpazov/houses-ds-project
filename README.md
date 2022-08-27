@@ -47,7 +47,10 @@ unzip -o data/raw/*.zip -d data/raw/
 
 #### Preprocess
 
-* python houses_pipeline/preprocess data/raw/train.csv data/interim/train.csv
+```bash
+python houses_pipeline/preprocess data/raw/train.csv data/interim/train.csv
+```
+
 
 #### Data Splitting
 
@@ -65,6 +68,19 @@ pytest
 ```
 
 ## Usage
+
+### Preprocessing
+
+```bash
+python houses_pipeline/preprocess
+```
+
+### Training the Lasso Regression
+
+```bash
+python houses_pipeline/modelling/train_lasso.py
+```
+
 
 
 ## Contributing\Developing
