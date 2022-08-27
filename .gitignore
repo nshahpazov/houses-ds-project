@@ -6,6 +6,8 @@ houses_pipeline.egg-info
 .tox
 # data files
 data
+models
 !data/raw/.gitkeep
 !data/interim/.gitkeep
 !data/processed/.gitkeep
+!models/.gitkeep
