@@ -15,6 +15,6 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(logging_configuration.get_console_handler())
 logger.propagate = False
 
-
+# set the version as an importable module
 with open(VERSION_PATH, 'r', encoding='utf-8') as version_file:
     __version__ = version_file.read().strip()

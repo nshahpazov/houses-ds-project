@@ -47,8 +47,11 @@ DEFAULT_REDUNDANT_COLUMNS_THRESHOLD = 0.9
 DEFAULT_NAN_COLUMNS_THRESHOLD = 0.9
 DEFAULT_RARE_CATEGORIES_DROP_THRESHOLD = 0.1
 
-DEFAULT_INPUT_PATH = "data/raw/train.csv"
-DEFAULT_OUTPUT_PATH = "data/interim/train.csv"
+DEFAULT_PREPROCESS_INPUT_PATH = "data/raw/train.csv"
+DEFAULT_PREPROCESS_OUTPUT_PATH = "data/interim/train.csv"
+
+
+DEFAULT_TRAIN_INPUT_PATH = "data/interim/train.csv"
 
 # arguments helps
 INPUT_PATH_HELP = "The path of the csv file to preprocess"

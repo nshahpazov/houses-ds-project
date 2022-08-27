@@ -22,12 +22,12 @@ from houses_pipeline import constants
 @click.argument(
     'input_filepath',
     type=click.Path(exists=True),
-    default=constants.DEFAULT_INPUT_PATH
+    default=constants.DEFAULT_PREPROCESS_INPUT_PATH
 )
 @click.argument(
     'output_filepath',
     type=click.Path(),
-    default=constants.DEFAULT_OUTPUT_PATH
+    default=constants.DEFAULT_PREPROCESS_OUTPUT_PATH
 )
 @click.option(
     '-v',
