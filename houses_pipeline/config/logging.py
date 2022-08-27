@@ -15,7 +15,11 @@ PACKAGE_ROOT = pathlib.Path(houses_pipeline.__file__).resolve().parent.parent
 LOG_DIR = PACKAGE_ROOT / 'logs'
 VERSION_PATH = PACKAGE_ROOT / 'VERSION'
 LOG_FILE = LOG_DIR / 'pipeline.log'
-LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+FORMATTER = logging.Formatter(
+    "%(asctime)s — %(name)s — %(levelname)s —"
+     "%(funcName)s:%(lineno)d — %(message)s"
+)
 
 
 class LoggingHandler:
@@ -25,14 +29,15 @@ class LoggingHandler:
     def __get_console_handler():
         """get the console handler"""
         console_handler = logging.StreamHandler(sys.stdout)
-        logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
-        console_handler.setFormatter(LOG_FORMAT)
+        console_handler.setFormatter(fmt=FORMATTER)
         return console_handler
 
     @staticmethod
     def __get_file_handler():
-        file_handler = TimedRotatingFileHandler(LOG_FILE, when='midnight')
-        file_handler.setFormatter(LOG_FORMAT)
+        file_handler = TimedRotatingFileHandler(
+            filename=LOG_FILE, when='midnight'
+        )
+        file_handler.setFormatter(fmt=FORMATTER)
         file_handler.setLevel(logging.INFO)
         return file_handler
 
@@ -55,6 +60,7 @@ class LoggingHandler:
         logger = logging.getLogger(logger_name)
         logger.setLevel(logging.DEBUG)
 
+        # attach handlers
         logger.addHandler(LoggingHandler.__get_file_handler())
         logger.addHandler(LoggingHandler.__get_console_handler())
 
