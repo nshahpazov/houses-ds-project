@@ -1,7 +1,7 @@
 """Train a lasso regression"""
 # generally used modules
-# import joblib
 from urllib.parse import urlparse
+import joblib
 import pandas as pd
 import click
 
@@ -21,13 +21,14 @@ from sklearn.model_selection import train_test_split
 import mlflow
 import mlflow.sklearn
 
-
 # internal modules
 from houses_pipeline import constants
-
 from houses_pipeline.transformers import RareCategoriesReplacer
 from houses_pipeline import __version__
+from houses_pipeline.config import config
+from houses_pipeline.config.logging import LoggingHandler
 
+_logger = LoggingHandler.get_logger(__name__)
 
 __ordinal_encoder = OrdinalEncoder(
     categories=[constants.ORDINALS_ORDERING] * len(constants.ORDINALS),
@@ -80,6 +81,24 @@ def create_lasso_pipeline(rare_threshold, X_train, alpha, model_seed):
     )
 
     return pipeline
+
+def track_mlflow_model(model, model_name):
+    """Track the model in the mlflow model registry"""
+    tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
+    # Model registry does not work with file store
+    if tracking_url_type_store != "file":
+        # Register the model
+        # There are other ways to use the Model Registry, which depends on the use case,
+        # please refer to the doc for more information:
+        # https://mlflow.org/docs/latest/model-registry.html#api-workflow
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            artifact_path=f"lasso_{__version__}",
+            registered_model_name=f"lasso_{__version__}"
+        )
+    else:
+        mlflow.sklearn.log_model(sk_model=model, artifact_path=model_name)
+
 
 @click.command()
 @click.argument(
@@ -148,36 +167,27 @@ def main(input_filepath, alpha, model_seed, split_seed, rare_threshold):
         mlflow.log_param('alpha', alpha)
         mlflow.log_param('model_random_seed', model_seed)
 
-        tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
-        # Model registry does not work with file store
-        if tracking_url_type_store != "file":
 
-            # Register the model
-            # There are other ways to use the Model Registry, which depends on the use case,
-            # please refer to the doc for more information:
-            # https://mlflow.org/docs/latest/model-registry.html#api-workflow
-            mlflow.sklearn.log_model(
-                sk_model=pipeline,
-                artifact_path=f"lasso_{__version__}",
-                registered_model_name=f"lasso_{__version__}"
-            )
-        else:
-            mlflow.sklearn.log_model(
-                sk_model=pipeline,
-                artifact_path=f"lasso_{__version__}"
-            )
+        # track the model in moflow
+        model_name = f"lasso_{__version__}"
+        track_mlflow_model(pipeline, model_name)
+        model_uri = mlflow.get_artifact_uri(model_name)
 
-            model_uri = mlflow.get_artifact_uri(f"lasso_{__version__}")
+        # evaluate the model and track the metrics
+        mlflow.evaluate(
+            model_uri,
+            X_test.assign(y=y_test),
+            targets="y",
+            model_type="regressor",
+            dataset_name="houses_test",
+            evaluators=["default"]
+        )
 
-            # evaluate the model and track the metrics
-            mlflow.evaluate(
-                model_uri,
-                X_test.assign(y=y_test),
-                targets="y",
-                model_type="regressor",
-                dataset_name="houses_test",
-                evaluators=["default"]
-            )
+        # save the lasso to the models directory
+        save_path = config.TRAINED_MODELS_DIR / f"{model_name}.pkl"
+        joblib.dump(pipeline, save_path)
+        _logger.info("Saved the lasso pipeline at %s", save_path)
+
 
 if __name__ == "__main__":
     # pylint: disable=no-value-for-parameter
