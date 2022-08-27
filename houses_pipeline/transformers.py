@@ -3,8 +3,6 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import pandas as pd
 import numpy as np
 
-from pipeline.preprocess import constants
-
 class Pandalizer(BaseEstimator, TransformerMixin):
     """
     Executes a transformer on a subset of columns and returns a
@@ -43,72 +41,45 @@ class RareCategoriesReplacer(BaseEstimator, TransformerMixin):
     """
     Replaces Categorical Columns rare values with a keyword
     """
-    def __init__(self, replace_keyword='Other', all_categories=None) -> None:
-        self.replace_keyword = replace_keyword
-        self.all_categories = all_categories
-        self.columns = []
-        self.rares = None
+    def __init__(self, threshold=0.05, keyword: str='Other') -> None:
+        self.keyword = keyword
+        self.threshold = threshold
+        self.proportions = []
 
 
-    def get_proportions(self, df, columns):
+    def get_proportions(self, X):
         """
         Get the proportions of the keywords in the categorical columns
         """
-        value_counts = {k: df[k].value_counts(normalize=True) for k in columns}
-        self.columns = []
-        return value_counts
+        counts = [pd.Series(x).value_counts(normalize=True) for x in X.T]
+        return counts
 
 
-    def fit(self, X, y=None, columns:list[str]=None, threshold: float=0.05):
-        """Fit the rare categorical"""
+    def fit(self, X, y=None):
+        """Fit the rare categorical transformer"""
         # pylint: disable=unused-argument
-        self.columns = columns or constants.CATEGORICAL_COLUMNS
-        proportions = self.get_proportions(X, self.columns)
-        items = proportions.items()
-
-        # set the rare and all in order to transform
-        self.all_categories = {k: v.index.values for k, v in items}
-        self.rares = {k: list(l[l < threshold].index.values) for k, l in items}
-
+        is_df = isinstance(X, pd.DataFrame)
+        self.proportions = self.get_proportions(X.values if is_df else X)
         return self
 
 
-    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+    def is_to_replace(self, i, col):
+        """calculate keywords to replace by a given column"""
+        props = self.proportions[i]
+        rares = props[props < self.threshold].index.values
+        new_ones = np.setdiff1d(col, props.index)
+        is_rare = np.isin(col, rares)
+        is_new_one = np.isin(col, new_ones)
+        return is_rare | is_new_one
+
+
+    def transform(self, X) -> pd.DataFrame:
         """Transform the rare categorical transformer"""
-        result_df = df.copy()
-        # must apply to each column
-        for col in self.columns:
-            # get keyswords not present in the all values
-            uniques = result_df[col].unique()
-            missing = np.setdiff1d(uniques, self.all_categories[col])
-
-            # replace rare and not yet seen keywords
-            result_df[col] = result_df[col].replace(
-                to_replace=np.append(self.rares[col], missing),
-                value=self.replace_keyword
-            )
-        return result_df
-
-
-class MissingColumnsRemover(BaseEstimator, TransformerMixin):
-    """
-    Removes columns with a high proportion of missing values
-    """
-    def __init__(self):
-        self.columns_to_drop = []
-
-
-    def fit(self, X, y=None, threshold:float=0.8):
-        """Learn which columns should be removed"""
-        # pylint: disable=unused-argument
-        null_props = X.isnull().mean(axis=0)
-        self.columns_to_drop = null_props[null_props > threshold].index.values
-        return self
-
-
-    def transform(self, X):
-        """Drop the columns which have missing value above the threshold"""
-        return X.drop(self.columns_to_drop, axis=1)
+        is_df = isinstance(X, pd.DataFrame)
+        Xt = X.values.copy() if is_df else X.values.copy()
+        for i, col in enumerate(Xt.T):
+            col[self.is_to_replace(i, col)] = self.keyword
+        return Xt
 
 
 class RedundantColumnsRemover(BaseEstimator, TransformerMixin):
@@ -120,13 +91,13 @@ class RedundantColumnsRemover(BaseEstimator, TransformerMixin):
         self.additional = None
 
 
-    def _get_max_count(self, column: str):
+    def _get_max_count(self, column):
         """Return the maximal value count for a categorical column"""
         category_props = column.value_counts(normalize=True)
         return category_props.max()
 
 
-    def fit(self, X, y=None, threshold:float=0.9, additional: list[str]=None):
+    def fit(self, X, y=None, threshold: float=0.9, additional: list[str]=None):
         """Learn the columns which are redundantly occupied"""
         # pylint: disable=unused-argument
         additional = [] if not additional else additional

@@ -4,7 +4,7 @@ Test transformers
 from sklearn.impute import SimpleImputer
 import pandas as pd
 import numpy as np
-from pipeline.preprocess.transformers import Pandalizer
+from ..transformers import Pandalizer
 
 
 def test_pandalizer_returns_dataframe():

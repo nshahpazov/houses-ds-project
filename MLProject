@@ -1,0 +1,43 @@
+name: houses-ds-project
+conda_env: environment.yml
+entry_points:
+  fetch_dataset:
+    parameters:
+      output_dir: {
+        type: string,
+        default: data/raw
+      }
+    command: >
+          kaggle competitions download -c house-prices-advanced-regression-techniques -p {output_dir} ;\
+          unzip -o {output_dir}/*.zip -d {output_dir}/
+
+  main:
+    parameters:
+      input_filepath: {
+        type: string,
+        default: data/raw/train.csv
+      }
+      output_filepath: {
+        type: string,
+        default: "data/interim/train.csv"
+      }
+      redundant_columns_threhold: {
+        type: float, default: 0.9
+      }
+      nan_columns_threshold: {
+        type: float, default: 0.9
+      }
+      rare_categories_threshold: {
+        type: float, default: 0.1
+      }
+      verbose: {
+        type: boolean,
+        default: False
+      }
+
+    command: >
+      python -m houses_pipeline.preprocess {input_filepath} {output_filepath} \
+        --redundant_columns_threhold={redundant_columns_threhold} \
+        --nan_columns_threshold={nan_columns_threshold} \
+        --rare_categories_threshold={rare_categories_threshold} \
+        --verbose={verbose}

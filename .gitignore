@@ -1,2 +1,11 @@
-data
 houses.egg-info
+mlruns
+build
+dist
+houses_pipeline.egg-info
+.tox
+# data files
+data
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep

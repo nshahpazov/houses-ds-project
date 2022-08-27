@@ -1,3 +1,0 @@
-"""
-Provides some arithmetic functions
-"""

@@ -1,0 +1,7 @@
+include *.yaml
+include *.yml
+include MLProject
+include VERSION
+recursive-include houses_pipeline *.gitkeep
+recursive-include houses_pipeline *.py
+recursive-include houses_pipeline *.sh
