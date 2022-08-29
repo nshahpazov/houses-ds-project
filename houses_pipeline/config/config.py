@@ -1,16 +1,25 @@
 """Configuring different parts of the houses pipeline module"""
 import pathlib
 import pandas as pd
+
+# pylint: disable=cyclic-import
 import houses_pipeline
 
 pd.options.display.max_rows = 10
 pd.options.display.max_columns = 10
 
 PACKAGE_ROOT = pathlib.Path(houses_pipeline.__file__).resolve().parent.parent
+# xTODO: That should be configurable as well.
 LOG_DIR = PACKAGE_ROOT / "logs"
 
+
+# xTODO: this path should be configurable from the package, e.g.
+# a setup method, or taking an environment variable or a yml file.
+# Definitelly it shouldn't be hardcoded as a constant
 TRAINED_MODELS_DIR = PACKAGE_ROOT / "models"
 DATASET_DIR = PACKAGE_ROOT / "data"
+LASSO_SAVE_FILENAME = 'lasso'
+
 
 # variables
 FEATURES = [
