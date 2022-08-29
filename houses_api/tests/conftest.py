@@ -1,7 +1,7 @@
 """Configuration for our restful API testing"""
 import pytest
-from api.config import TestingConfig
-from api.app import create_app
+from ..api.config import TestingConfig
+from ..api.app import create_app
 
 
 @pytest.fixture

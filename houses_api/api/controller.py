@@ -2,6 +2,10 @@
 from flask import Blueprint, request, jsonify
 
 from houses_pipeline.predict import lasso
+from houses_pipeline import __version__ as _model_version
+from houses_api import __version__ as _api_version
+
+
 from .config import get_logger
 
 _logger = get_logger(logger_name=__name__)
@@ -14,14 +18,19 @@ def get_health():
     return "OK"
 
 
-@predictions_app.get("/version/<name>")
-def get_version(name: str):
-    """The version of the model"""
-    return f"OK Boomer, {name}"
+@predictions_app.get('/version')
+def version():
+    """
+    Return the version of the model and the Restful API
+    """
+    return {
+        'model_version': _model_version,
+        'api_version': _api_version
+    }
 
 
 @predictions_app.post("/predict/lasso")
-def get_lasso_predictions():
+def produce_lasso_predictions():
     """pass an observation or more and return an array of predictions"""
     input_data = request.get_json()
 
@@ -30,7 +39,7 @@ def get_lasso_predictions():
     # validate, preprocess and get predictions using the fitted model
     prediction_results = lasso.predict(input_data=input_data)
     _logger.info("Outputs: %s", prediction_results)
-    _logger.info(jsonify(prediction_results))
+    _logger.info(prediction_results)
     return jsonify(prediction_results)
 
 

@@ -2,11 +2,13 @@
 import json
 import math
 import pandas as pd
+from houses_pipeline import __version__ as _model_version
+from .. import __version__ as _api_version
 
-from api.config import get_logger
-from api.config import TEST_DATASET_PATH
+from ..api.config import get_logger
+from ..api.config import TEST_DATASET_PATH
 
-from houses_pipeline import __version__
+
 
 _logger = get_logger(logger_name=__name__)
 
@@ -20,6 +22,20 @@ def test_health_endpoint_returns_ok_status(test_client):
     response = test_client.get('/health')
     _logger.info("Health returns OK http status")
     assert response.status_code == 200
+
+
+def test_version_endpoint_returns_version(test_client):
+    """
+    Test whether the API is returning proper version of the model and the API
+    """
+    # When
+    response = test_client.get('/version')
+
+    # Then
+    assert response.status_code == 200
+    response_json = json.loads(response.data)
+    assert response_json['model_version'] == _model_version
+    assert response_json['api_version'] == _api_version
 
 
 def test_prediction_endpoint_returns_prediction(test_client):
@@ -43,4 +59,4 @@ def test_prediction_endpoint_returns_prediction(test_client):
     print(response_json)
     response_version = response_json['version']
     assert math.ceil(prediction[0]) == 117205
-    assert response_version == __version__
+    assert response_version == _model_version
