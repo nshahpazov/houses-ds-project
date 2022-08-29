@@ -1,4 +1,4 @@
-"""Train a lasso regression"""
+"""Train a lasso regression. Intended use is as a command from the terminal"""
 # generally used modules
 from urllib.parse import urlparse
 import joblib
