@@ -1,8 +1,9 @@
 """The create app module for creating a flask api application"""
 from flask import Flask
 
-from api.controller import predictions_app
-from api.config import get_logger
+
+from ..api.controller import predictions_app
+from ..api.config import get_logger
 
 _logger = get_logger(logger_name=__name__)
 
