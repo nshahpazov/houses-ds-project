@@ -9,15 +9,15 @@ jobs:
       - run:
           name: Running Houses pipeline tests
           command: |
-#           conda init bash
-#           source ~/.bashrc
-#           conda env create -f environment.yml
-#           conda activate houses
-#           chmod +x ./houses_pipeline/fetch/fetch_dataset.py
-#           mkdir data
-#           mkdir data/raw data/processed data/interim
-#           ./houses_pipeline/fetch/fetch_dataset.py data/raw
-#           pytest houses_pipeline
+            conda init bash
+            source ~/.bashrc
+            conda env create -f environment.yml
+            conda activate houses
+            chmod +x ./houses_pipeline/fetch/fetch_dataset.py
+            mkdir data
+            mkdir data/raw data/processed data/interim
+            ./houses_pipeline/fetch/fetch_dataset.py data/raw
+            pytest houses_pipeline
 # jobs:
 #   test_houses_pipeline:
 #     working_directory: ~/project
