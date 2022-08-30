@@ -1,9 +1,11 @@
 version: 2.1
 jobs:
   test_houses_pipeline:
+    working_directory: ~/project
     docker:
       - image: continuumio/miniconda3:latest
     steps:
+      - checkout
       - run:
           name: all
           command: |
