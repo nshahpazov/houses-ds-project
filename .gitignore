@@ -5,11 +5,10 @@ dist
 houses_pipeline.egg-info
 .tox
 # data files
-data
+data/interim
+data/results
+data/processed
 models
-!data/raw/.gitkeep
-!data/interim/.gitkeep
-!data/processed/.gitkeep
 !models/.gitkeep
 
 logs
