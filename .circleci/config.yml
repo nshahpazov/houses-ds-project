@@ -14,9 +14,7 @@ jobs:
             conda env create -f environment.yml
             conda activate houses
             chmod +x ./houses_pipeline/fetch/fetch_dataset.sh
-            mkdir data
-            mkdir data/raw data/processed data/interim
-            ./houses_pipeline/fetch/fetch_dataset.sh data/raw
+            mkdir -p data/processed data/interim
             pytest houses_pipeline
 
 workflows:
