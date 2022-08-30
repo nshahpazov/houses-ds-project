@@ -7,10 +7,17 @@ jobs:
     steps:
       - checkout
       - run:
-          name: The First Step
+          name: Running Houses pipeline tests
           command: |
-            echo 'Hello World!'
-            echo 'This is the delivery pipeline'version: 2
+#           conda init bash
+#           source ~/.bashrc
+#           conda env create -f environment.yml
+#           conda activate houses
+#           chmod +x ./houses_pipeline/fetch/fetch_dataset.py
+#           mkdir data
+#           mkdir data/raw data/processed data/interim
+#           ./houses_pipeline/fetch/fetch_dataset.py data/raw
+#           pytest houses_pipeline
 # jobs:
 #   test_houses_pipeline:
 #     working_directory: ~/project
