@@ -1,40 +1,23 @@
 version: 2
-
-defaults: &defaults
-  docker:
-    - image: continuumio/miniconda3:latest
-  working_directory: ~/project
-
-setup_conda_environment: &setup_conda_environment
-  run:
-    name: Create conda environment
-    command: |
-      conda init bash
-      source ~/.bashrc
-      conda env create -f environment.yml
-      conda activate houses
-
-
-fetch_houses_dataset: &fetch_houses_dataset
-  run:
-    name: Fetch the kaggle dataset
-    command: |
-      chmod +x ./houses_pipeline/fetch/fetch_dataset.sh
-      mkdir -p data/raw data data/interim data/processed
-      ./houses_pipeline/fetch/fetch_dataset.sh data/raw
-
 jobs:
   test_houses_pipeline:
     working_directory: ~/project
     docker:
-      - image: continuumio/miniconda3:latest
+      - image: continuumio/miniconda3:4.12.0
     steps:
       - checkout
-      - *setup_conda_environment
-      - *fetch_houses_dataset
       - run:
         name: Running Houses pipeline tests
-        command: pytest houses_pipeline
+        command: |
+          conda init bash
+          source ~/.bashrc
+          conda env create -f environment.yml
+          conda activate houses
+          chmod +x ./houses_pipeline/fetch/fetch_dataset.py
+          mkdir data
+          mkdir data/raw data/processed data/interim
+          ./houses_pipeline/fetch/fetch_dataset.py data/raw
+          pytest houses_pipeline
 
 workflows:
   version: 2
