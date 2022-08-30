@@ -5,8 +5,7 @@ jobs:
   docker:
     - image: continuumio/miniconda3:4.12.0
   steps:
-    - checkout:
-      path: ~/project
+    - checkout
     - run:
       name: Running Houses pipeline tests
       command: |
@@ -17,7 +16,6 @@ jobs:
         chmod +x ./houses_pipeline/fetch/fetch_dataset.py
         mkdir data
         mkdir data/raw data/processed data/interim
-        # TODO change that to use the make file
         ./houses_pipeline/fetch/fetch_dataset.py data/raw
         pytest houses_pipeline
 
