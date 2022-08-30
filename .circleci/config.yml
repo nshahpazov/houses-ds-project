@@ -15,6 +15,7 @@ jobs:
             conda activate houses
             chmod +x ./houses_pipeline/fetch/fetch_dataset.sh
             mkdir -p data/processed data/interim
+            mkdir -p models logs
             pytest houses_pipeline
 
 workflows:
