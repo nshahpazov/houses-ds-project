@@ -1,9 +1,11 @@
 version: 2.1
 jobs:
   test_houses_pipeline:
+    working_directory: ~/project
     docker:
       - image: alpine:3.15
     steps:
+      - checkout
       - run:
           name: The First Step
           command: |
