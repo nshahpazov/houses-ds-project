@@ -1,43 +1,24 @@
 version: 2.1
 jobs:
-    test_houses_pipeline::
+  test_houses_pipeline:
     docker:
       - image: continuumio/miniconda3:latest
     steps:
       - run:
-          name: The First Step
+          name: all
           command: |
             conda init bash
             source ~/.bashrc
             conda env create -f environment.yml
             conda activate houses
-            chmod +x ./houses_pipeline/fetch/fetch_dataset.py
+            chmod +x ./houses_pipeline/fetch/fetch_dataset.sh
             mkdir data
             mkdir data/raw data/processed data/interim
-            ./houses_pipeline/fetch/fetch_dataset.py data/raw
+            ./houses_pipeline/fetch/fetch_dataset.sh data/raw
             pytest houses_pipeline
-# jobs:
 
-#     working_directory: ~/project
-#     docker:
-#       - image: continuumio/miniconda3:4.12.0
-#     steps:
-#       - checkout
-#       - run:
-#         name: Running Houses pipeline tests
-#         command: |
-#           conda init bash
-#           source ~/.bashrc
-#           conda env create -f environment.yml
-#           conda activate houses
-#           chmod +x ./houses_pipeline/fetch/fetch_dataset.py
-#           mkdir data
-#           mkdir data/raw data/processed data/interim
-#           ./houses_pipeline/fetch/fetch_dataset.py data/raw
-#           pytest houses_pipeline
-
-#   workflows:
-#     version: 2
-#     test-all:
-#       jobs:
-#         - test_houses_pipeline
+workflows:
+  version: 2
+  test-all:
+    jobs:
+      - test_houses_pipeline
