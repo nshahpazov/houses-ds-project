@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  build:
+  test_houses_pipeline:
     docker:
       - image: alpine:3.15
     steps:
@@ -28,9 +28,8 @@ jobs:
 #           mkdir data/raw data/processed data/interim
 #           ./houses_pipeline/fetch/fetch_dataset.py data/raw
 #           pytest houses_pipeline
-
-#   workflows:
-#     version: 2
-#     test-all:
-#       jobs:
-#         - test_houses_pipeline
+workflows:
+  version: 2
+  test-all:
+    jobs:
+      - test_houses_pipeline
