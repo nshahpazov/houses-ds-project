@@ -1,23 +1,8 @@
-  workflows:
-    version: 2
-    test-all:
-      jobs:
-        - test_houses_pipeline
-
-version: 2
-jobs:
-  test_houses_pipeline:
-    working_directory: ~/project
-    docker:
-      - image: continuumio/miniconda3:latest
-    steps:
-      - checkout
-      - *setup_conda_environment
-      - *fetch_houses_dataset
-      - run:
-        name: Running Houses pipeline tests
-        command: pytest houses_pipeline
-
+workflows:
+  version: 2
+  test-all:
+    jobs:
+      - test_houses_pipeline
 
 setup_conda_environment: &setup_conda_environment
   run:
@@ -36,3 +21,19 @@ fetch_houses_dataset: &fetch_houses_dataset
       chmod +x ./houses_pipeline/fetch/fetch_dataset.sh
       mkdir -p data/raw data data/interim data/processed
       ./houses_pipeline/fetch/fetch_dataset.sh data/raw
+
+
+version: 2
+jobs:
+  test_houses_pipeline:
+    working_directory: ~/project
+    docker:
+      - image: continuumio/miniconda3:latest
+    steps:
+      - checkout
+      - *setup_conda_environment
+      - *fetch_houses_dataset
+      - run:
+        name: Running Houses pipeline tests
+        command: |
+          pytest houses_pipeline
