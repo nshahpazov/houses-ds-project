@@ -1,12 +1,9 @@
 """The flask controller module for the houses api server"""
 from flask import Blueprint, request, jsonify
-
 from houses_pipeline.predict import lasso
 from houses_pipeline import __version__ as _model_version
 from houses_api import __version__ as _api_version
 from houses_api.api.validation import validate_inputs
-
-
 from .config import get_logger
 
 _logger = get_logger(logger_name=__name__)
