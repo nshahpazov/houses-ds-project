@@ -1,0 +1,25 @@
+version: 2.0
+jobs:
+  test_houses_pipeline:
+    working_directory: ~/project
+    docker:
+      - image: continuumio/miniconda3:latest
+    steps:
+      - checkout
+      - run:
+          name: all
+          command: |
+            conda init bash
+            source ~/.bashrc
+            conda env create -f environment.yml
+            conda activate houses
+            chmod +x ./houses_pipeline/fetch/fetch_dataset.sh
+            mkdir -p data/processed data/interim
+            mkdir -p models logs
+            pytest houses_pipeline
+
+workflows:
+  version: 2
+  test-all:
+    jobs:
+      - test_houses_pipeline
