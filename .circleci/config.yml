@@ -1,3 +1,17 @@
+defaults: &defaults
+  docker:
+    - image: continuumio/miniconda3:latest
+  working_directory: ~/project
+
+prepare_conda_environment: &prepare_conda_environment
+  run:
+    name: Prepare Conda Environment
+    command: |
+      conda init bash
+      source ~/.bashrc
+      conda env create -f environment.yml
+      conda activate houses
+
 version: 2.0
 jobs:
   test_houses_pipeline:
@@ -6,14 +20,10 @@ jobs:
       - image: continuumio/miniconda3:latest
     steps:
       - checkout
+      - *prepare_conda_environment
       - run:
           name: all
           command: |
-            conda init bash
-            source ~/.bashrc
-            conda env create -f environment.yml
-            conda activate houses
-            chmod +x ./houses_pipeline/fetch/fetch_dataset.sh
             mkdir -p data/processed data/interim
             mkdir -p models logs
             pytest houses_pipeline
