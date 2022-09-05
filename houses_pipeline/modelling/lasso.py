@@ -82,6 +82,61 @@ def create_lasso_pipeline(rare_threshold, X_train, alpha, model_seed):
 
     return pipeline
 
+
+def load_train_dataset(input_filepath=constants.DEFAULT_TRAIN_INPUT_PATH):
+    """Load our dataset used for training"""
+    return pd.read_csv(input_filepath)
+
+
+def split_dataset(
+    train_df: pd.DataFrame,
+    train_size: float=constants.DEFAULT_TRAIN_SET_SIZE,
+    split_seed: int=constants.DEFAULT_SPLIT_SEED
+):
+    """Split the dataset producing a training and test sets"""
+    return train_test_split(
+        train_df.drop([constants.TARGET_VARIABLE_NAME, 'Id'], axis=1),
+        train_df[constants.TARGET_VARIABLE_NAME],
+        train_size=train_size,
+        random_state=split_seed
+    )
+
+
+def train(
+    input_filepath: str=constants.DEFAULT_TRAIN_INPUT_PATH,
+    train_size: float=constants.DEFAULT_TRAIN_SET_SIZE,
+    split_seed: int=constants.DEFAULT_SPLIT_SEED,
+    rare_threshold=constants.DEFAULT_RARE_CATEGORIES_DROP_THRESHOLD,
+    alpha=constants.DEFAULT_LASSO_ALPHA,
+    model_seed=constants.DEFAULT_MODEL_SEED
+):
+    """Train the lasso regression"""
+    houses_df = load_train_dataset(input_filepath=input_filepath)
+
+    # split the dataset
+    X_train, _, y_train, _ = split_dataset(
+        train_df=houses_df,
+        train_size=train_size,
+        split_seed=split_seed
+    )
+
+    # create a pipeline to be fitted
+    pipeline = create_lasso_pipeline(rare_threshold, X_train, alpha, model_seed)
+
+    # fit the pipeline
+    pipeline.fit(X_train, y_train)
+
+    # store the pipeline
+
+
+def save_model(pipeline) -> str:
+    """A method to save the output path"""
+    model_name = f"lasso_{__version__}"
+    save_path = config.TRAINED_MODELS_DIR / f"{model_name}.pkl"
+    joblib.dump(pipeline, save_path)
+    return save_path
+
+
 def track_mlflow_model(model, model_name):
     """Track the model in the mlflow model registry"""
     tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
@@ -110,14 +165,14 @@ def track_mlflow_model(model, model_name):
     '--alpha',
     'alpha',
     required=False,
-    default=0.05,
+    default=constants.DEFAULT_LASSO_ALPHA,
     help="Regularization parameter of the lasso regression"
 )
 @click.option(
     '--model_seed',
     'model_seed',
     required=False,
-    default=1,
+    default=constants.DEFAULT_MODEL_SEED,
     help="Regularization model seed"
 )
 @click.option(
@@ -128,22 +183,31 @@ def track_mlflow_model(model, model_name):
     help="Splitting seed"
 )
 @click.option(
+    '--train_size',
+    'train_size',
+    required=False,
+    default=constants.DEFAULT_TRAIN_SET_SIZE,
+    help="Train set size to be used for the training"
+)
+@click.option(
     '--rare_threshold',
     'rare_threshold',
     required=False,
     default=0.05,
     help="Rare Threshold"
 )
-def main(input_filepath, alpha, model_seed, split_seed, rare_threshold):
+def main(
+    input_filepath, alpha, model_seed, split_seed, train_size, rare_threshold
+):
     """Main method for training the lasso model"""
 
-    houses_df = pd.read_csv(input_filepath)
+    houses_df = load_train_dataset(input_filepath=input_filepath)
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        houses_df.drop([constants.TARGET_VARIABLE_NAME, 'Id'], axis=1),
-        houses_df[constants.TARGET_VARIABLE_NAME],
-        train_size=0.8,
-        random_state=split_seed
+    # split the dataset
+    X_train, X_test, y_train, y_test = split_dataset(
+        train_df=houses_df,
+        train_size=train_size,
+        split_seed=split_seed
     )
 
     # to set some additional notes in mlflow tracking use:
@@ -152,9 +216,11 @@ def main(input_filepath, alpha, model_seed, split_seed, rare_threshold):
     # start experiment tracking
     experiment = mlflow.set_experiment(experiment_name="houses_lasso_train")
     with mlflow.start_run(experiment_id=experiment.experiment_id):
+        # create the training pipeline
         pipeline = create_lasso_pipeline(
             rare_threshold, X_train, alpha, model_seed
         )
+
         # fit the pipeline
         pipeline.fit(X_train, y_train)
 
@@ -169,9 +235,8 @@ def main(input_filepath, alpha, model_seed, split_seed, rare_threshold):
 
 
         # track the model in moflow
-        model_name = f"lasso_{__version__}"
-        track_mlflow_model(pipeline, model_name)
-        model_uri = mlflow.get_artifact_uri(model_name)
+        track_mlflow_model(pipeline, f"lasso_{__version__}")
+        model_uri = mlflow.get_artifact_uri(f"lasso_{__version__}")
 
         # evaluate the model and track the metrics
         mlflow.evaluate(
@@ -183,12 +248,10 @@ def main(input_filepath, alpha, model_seed, split_seed, rare_threshold):
             evaluators=["default"]
         )
 
-        # save the lasso to the models directory
-        save_path = config.TRAINED_MODELS_DIR / f"{model_name}.pkl"
-        joblib.dump(pipeline, save_path)
+        # save the lasso to the models registry
+        save_path = save_model(pipeline)
         _logger.info("Saved the lasso pipeline at %s", save_path)
 
 
 if __name__ == "__main__":
-    # pylint: disable=no-value-for-parameter
     main()
