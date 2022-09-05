@@ -20,6 +20,14 @@ commands:
           conda activate houses
           pytest houses_pipeline
           pytest houses_api
+
+  train_lasso_model:
+    steps:
+      - run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate houses
+          python ./houses_pipeline/modelling/train_lasso.py
 jobs:
   setup_and_run_tests:
     executor: docker-conda-executor
@@ -30,6 +38,7 @@ jobs:
       - checkout
       - activate_conda
       # - TODO: ADD this fetch_dataset
+      - train_lasso_model
       - run_tests
 
 # TODO: add build workflow
