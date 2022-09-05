@@ -1,25 +1,75 @@
-version: 2.0
+version: 2.1
+executors:
+  docker-conda-executor:
+    docker:
+      - image: continuumio/miniconda3:latest
+
+commands:
+  activate_conda:
+    steps:
+      - run: |
+          conda init bash
+          source ~/.bashrc
+          conda env create -f environment.yml
+          conda activate houses
+  run_tests:
+    steps:
+      - run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate houses
+          pytest houses_pipeline
+          pytest houses_api
+
+  train_lasso_model:
+    steps:
+      - checkout
+      - run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate houses
+          python -m houses_pipeline.modelling.train_lasso
+
+  fetch_dataset:
+    steps:
+      - checkout
+      - run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate houses
+          chmod +x ./houses_pipeline/fetch/fetch_dataset.sh
+          ./houses_pipeline/fetch/fetch_dataset.sh data/raw
+
+  preprocess_data:
+    steps:
+      - checkout
+      - run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate houses
+          python -m houses_pipeline.preprocess
+
 jobs:
-  test_houses_pipeline:
+  setup_and_run_tests:
+    executor: docker-conda-executor
     working_directory: ~/project
     docker:
       - image: continuumio/miniconda3:latest
     steps:
       - checkout
-      - run:
-          name: all
-          command: |
-            conda init bash
-            source ~/.bashrc
-            conda env create -f environment.yml
-            conda activate houses
-            chmod +x ./houses_pipeline/fetch/fetch_dataset.sh
-            mkdir -p data/processed data/interim
-            mkdir -p models logs
-            pytest houses_pipeline
+      - activate_conda
+      # - TODO: ADD this fetch_dataset
+      - fetch_dataset
+      - preprocess_data
+      - train_lasso_model
+      - run_tests
 
+# TODO: add build workflow
 workflows:
   version: 2
-  test-all:
+  houses_workflow:
     jobs:
-      - test_houses_pipeline
+      - setup_and_run_tests:
+          context:
+            - kaggling
+

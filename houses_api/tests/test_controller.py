@@ -1,4 +1,5 @@
 """Controller setup for the testing context"""
+import os
 import json
 import math
 import pandas as pd
@@ -46,9 +47,21 @@ def test_prediction_endpoint_returns_prediction(test_client):
     data versions to get confused by not spreading it
     across packages.
     """
+
+    # fetch data
+    os.system("./houses_pipeline/fetch/fetch_dataset.sh data/raw")
+
+    # preprocess
+    os.system("python -m houses_pipeline.preprocess")
+    os.system(
+        "python -m houses_pipeline.preprocess data/raw/test.csv data/interim/test.csv"
+    )
+
+    # train a model
+    os.system("python -m houses_pipeline.modelling.train_lasso")
+
     test_data = pd.read_csv(TEST_DATASET_PATH)
     post_json = test_data[0:1].to_json(orient='records')
-
     # when
     response = test_client.post('/predict/lasso', json=json.loads(post_json))
 
