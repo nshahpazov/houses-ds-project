@@ -7,22 +7,16 @@ executors:
 commands:
   activate_conda:
     steps:
-      - run:
-        name: activate_conda
-        command: |
+      - run: |
           conda init bash
           source ~/.bashrc
           conda env create -f environment.yml
           conda activate houses
-  
   run_tests:
     steps:
-      - run:
-        name: run_tests
-        command: |
+      - run: |
           pytest houses_pipeline
           pytest houses_api
-
 jobs:
   setup_and_run_tests:
     executor: docker-conda-executor
