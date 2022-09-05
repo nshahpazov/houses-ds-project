@@ -28,7 +28,6 @@ jobs:
       - activate_conda
       # - TODO: ADD this fetch_dataset
       - run_tests
-      - run_api_tests
 
 # TODO: add build workflow
 workflows:
