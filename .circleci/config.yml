@@ -1,4 +1,11 @@
-version: 2.0
+version: 2.1
+executors:
+  docker-conda-executor:
+    docker:
+      - image: continuumio/miniconda3:latest
+
+
+
 commands:
   activate_conda:
     steps:
@@ -19,6 +26,7 @@ commands:
           pytest houses_api
 jobs:
   setup_and_run_tests:
+    executor: docker-conda-executor
     working_directory: ~/project
     docker:
       - image: continuumio/miniconda3:latest
@@ -28,6 +36,9 @@ jobs:
       # - TODO: ADD this fetch_dataset
       - run_tests
       - run_api_tests
+
+
+# TODO: add build workflow
 
 workflows:
   version: 2
