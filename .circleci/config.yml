@@ -4,8 +4,6 @@ executors:
     docker:
       - image: continuumio/miniconda3:latest
 
-
-
 commands:
   activate_conda:
     steps:
@@ -13,9 +11,9 @@ commands:
         name: activate_conda
         command: |
           conda init bash
-                source ~/.bashrc
-                conda env create -f environment.yml
-                conda activate houses
+          source ~/.bashrc
+          conda env create -f environment.yml
+          conda activate houses
   
   run_tests:
     steps:
@@ -24,6 +22,7 @@ commands:
         command: |
           pytest houses_pipeline
           pytest houses_api
+
 jobs:
   setup_and_run_tests:
     executor: docker-conda-executor
@@ -37,9 +36,7 @@ jobs:
       - run_tests
       - run_api_tests
 
-
 # TODO: add build workflow
-
 workflows:
   version: 2
   houses_workflow:
