@@ -15,6 +15,7 @@ commands:
   run_tests:
     steps:
       - run: |
+          conda activate houses
           pytest houses_pipeline
           pytest houses_api
 jobs:
