@@ -29,6 +29,16 @@ commands:
           source ~/.bashrc
           conda activate houses
           python -m houses_pipeline.modelling.train_lasso
+
+  preprocess_data:
+    steps:
+      - checkout
+      - run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate houses
+          python -m houses_pipeline.preprocess
+
 jobs:
   setup_and_run_tests:
     executor: docker-conda-executor
@@ -39,6 +49,7 @@ jobs:
       - checkout
       - activate_conda
       # - TODO: ADD this fetch_dataset
+      - preprocess_data
       - train_lasso_model
       - run_tests
 
