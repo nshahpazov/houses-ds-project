@@ -23,6 +23,7 @@ commands:
 
   train_lasso_model:
     steps:
+      - checkout
       - run: |
           conda init bash
           source ~/.bashrc
