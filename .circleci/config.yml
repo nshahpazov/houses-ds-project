@@ -30,6 +30,13 @@ commands:
           conda activate houses
           python -m houses_pipeline.modelling.train_lasso
 
+  fetch_dataset:
+    steps:
+      - checkout
+      - run: |
+          chmod +x ./houses_pipeline/fetch/fetch_dataset.sh
+          ./houses_pipeline/fetch/fetch_dataset.sh data/raw
+
   preprocess_data:
     steps:
       - checkout
@@ -49,6 +56,7 @@ jobs:
       - checkout
       - activate_conda
       # - TODO: ADD this fetch_dataset
+      - fetch_dataset
       - preprocess_data
       - train_lasso_model
       - run_tests

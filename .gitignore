@@ -9,8 +9,10 @@ houses_pipeline.egg-info
 !data/raw/.gitkeep
 !data/interim/.gitkeep
 !data/processed/.gitkeep
+
 data/raw/*.csv
 data/raw/*.zip
+data/raw/*.txt
 data/interim/*.csv
 data/processed/*.csv
 
