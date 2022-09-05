@@ -58,4 +58,7 @@ workflows:
   version: 2
   houses_workflow:
     jobs:
-      - setup_and_run_tests
+      - setup_and_run_tests:
+        context:
+          - kaggling
+
