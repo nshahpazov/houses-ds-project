@@ -28,6 +28,7 @@ commands:
           conda init bash
           source ~/.bashrc
           conda activate houses
+          pip install .
           python ./houses_pipeline/modelling/train_lasso.py
 jobs:
   setup_and_run_tests:
