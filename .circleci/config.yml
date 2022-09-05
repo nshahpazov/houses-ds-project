@@ -34,6 +34,9 @@ commands:
     steps:
       - checkout
       - run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate houses
           chmod +x ./houses_pipeline/fetch/fetch_dataset.sh
           ./houses_pipeline/fetch/fetch_dataset.sh data/raw
 
