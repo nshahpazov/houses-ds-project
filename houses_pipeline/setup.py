@@ -14,12 +14,10 @@ EMAIL = 'nshahpazov@gmail.com'
 AUTHOR = 'Nikola Shahpazov'
 REQUIRES_PYTHON = '>=3.9.2'
 
-
 # def list_reqs(fname='requirements.txt'):
 #     """Packages that are required for this module to be executed"""
 #     with open(fname, encoding="utf-8") as descriptor:
 #         return descriptor.read().splitlines()
-
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -33,8 +31,7 @@ except FileNotFoundError:
 
 
 # Load the package's __version__.py module as a dictionary.
-ROOT_DIR = Path(__file__).resolve().parent
-PACKAGE_DIR = ROOT_DIR / 'houses_pipeline'
+PACKAGE_DIR = Path(__file__).resolve().parent
 about = {}
 
 with open(PACKAGE_DIR / 'VERSION', encoding='utf-8') as file:
