@@ -18,6 +18,7 @@ commands:
       - run: |
           . venv/bin/activate
           pip install -r houses_pipeline/requirements.txt
+          pip install -r houses_api/requirements.txt
 
   prepare_tox:
     steps:
