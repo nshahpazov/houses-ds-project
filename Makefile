@@ -1,7 +1,7 @@
 say_hello:
 	@echo "Helloooooooooooooooooooooooo"
 test:
-	@pytest .
+	@python -m pytest
 
 lint:
 	@pylint houses_pipeline

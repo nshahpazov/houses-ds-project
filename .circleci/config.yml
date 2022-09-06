@@ -1,7 +1,7 @@
 version: 2.1
 
 executors:
-  docker-conda-executor:
+  docker-python-container:
     docker:
       - image: circleci/python:3.9.5
 
@@ -17,6 +17,7 @@ commands:
     steps:
       - run:
           . venv/bin/activate
+          apt-get update && apt-get install make
           pip install -r houses_pipeline/requirements.txt
 
   prepare_tox:
@@ -28,11 +29,6 @@ commands:
     steps:
       - run: |
           make say_hello
-  update:
-    steps:
-      - run: |
-          apt-get update && apt-get install make
-
   run_tests:
     steps:
       - run: |
@@ -41,17 +37,12 @@ commands:
 
 jobs:
   setup_and_run_tests:
-    executor: docker-conda-executor
+    executor: docker-python-container
     working_directory: ~/project
-    docker:
-      - image: continuumio/miniconda3:latest
     steps:
       - checkout
-      - update
-      - say_hello
       - prepare_virtual_environment
       - install_requirements
-      # - create_conda_environment
       - run_tests
 
 # TODO: add build workflow
