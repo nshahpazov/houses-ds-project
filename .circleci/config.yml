@@ -24,7 +24,10 @@ commands:
   run_tests:
     steps:
       - activate_conda_environment
-      - run: make test
+      - run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate housesmake test
 
 jobs:
   setup_and_run_tests:
