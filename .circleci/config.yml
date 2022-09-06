@@ -15,7 +15,7 @@ commands:
 
   install_requirements:
     steps:
-      - run |
+      - run: |
           . venv/bin/activate
           pip install -r houses_pipeline/requirements.txt
 
