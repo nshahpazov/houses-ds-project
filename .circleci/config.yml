@@ -15,7 +15,10 @@ commands:
 
   activate_conda_environment:
     steps:
-      - run: conda activate houses
+      - run: |
+          conda init bash
+          source ~/.bashrc
+          conda activate houses
 
 
   run_tests:
