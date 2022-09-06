@@ -13,6 +13,12 @@ commands:
           source venv/bin/activate
           pip install --upgrade pip
 
+  install_requirements:
+    steps:
+      - run:
+          . venv/bin/activate
+          pip install -r houses_pipeline/requirements.txt
+
   prepare_tox:
     steps:
       - run: |
@@ -60,6 +66,8 @@ jobs:
       - checkout
       - update
       - say_hello
+      - prepare_virtual_environment
+      - install_requirements
       # - create_conda_environment
       # - run_tests
 
