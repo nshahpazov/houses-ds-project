@@ -36,7 +36,10 @@ commands:
           conda init bash
           source ~/.bashrc
           conda activate houses
-
+  update:
+    steps:
+      - run: |
+          apt-get update && apt-get install make
 
   run_tests:
     steps:
@@ -55,6 +58,7 @@ jobs:
       - image: continuumio/miniconda3:latest
     steps:
       - checkout
+      - update
       - say_hello
       # - create_conda_environment
       # - run_tests
