@@ -20,3 +20,4 @@ models/*.pkl
 
 logs/*.log*
 !logs/.gitkeep
+venv
