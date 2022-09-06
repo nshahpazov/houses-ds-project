@@ -8,7 +8,7 @@ import houses_pipeline
 pd.options.display.max_rows = 10
 pd.options.display.max_columns = 10
 
-PACKAGE_ROOT = pathlib.Path(houses_pipeline.__file__).resolve().parent.parent
+PACKAGE_ROOT = pathlib.Path(houses_pipeline.__file__).resolve().parent
 # xTODO: That should be configurable as well.
 LOG_DIR = PACKAGE_ROOT / "logs"
 

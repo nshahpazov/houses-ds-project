@@ -15,7 +15,6 @@ from .. import load_model
 from .. import constants
 
 
-
 _logger = LoggingHandler.get_logger(__name__)
 
 # load the preprocessor

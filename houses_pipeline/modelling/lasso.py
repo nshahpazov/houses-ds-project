@@ -36,125 +36,6 @@ __ordinal_encoder = OrdinalEncoder(
     unknown_value=-1
 )
 
-
-def create_lasso_pipeline(rare_threshold, X_train, alpha, model_seed):
-    """Create a pipeline for the lasso regression"""
-    categoricals = X_train.columns.intersection(constants.CATEGORICAL_COLUMNS)
-    numericals = X_train.columns.intersection(constants.NUMERICAL_COLUMNS)
-
-    numeric_pipeline = Pipeline([
-        ('impute_with_mean', SimpleImputer(strategy='mean')),
-        ('scaling', StandardScaler()),
-        ('yeo_johnson', PowerTransformer())
-    ])
-
-    # transformations to be applied to categorical features
-    categoric_pipeline = Pipeline([
-        ('replace_rare', RareCategoriesReplacer(rare_threshold)),
-        ('one_hot_encoding', OneHotEncoder())
-    ])
-
-    # transformations on the response variable
-    response_variable_pipeline = Pipeline([
-        ('normalization', StandardScaler()),
-        ('yeo_johnson', PowerTransformer())
-    ])
-
-    all_transformations = ColumnTransformer(
-        transformers=[
-            ('numeriric_transformations', numeric_pipeline, numericals),
-            ('categoric_transformations', categoric_pipeline, categoricals),
-            ('ordinals_encoding', __ordinal_encoder, constants.ORDINALS)
-        ],
-        remainder='passthrough'
-    )
-
-
-    pipeline = Pipeline(
-        steps=[
-            ('column_transformations', all_transformations),
-            ('lasso_and_target_transform', TransformedTargetRegressor(
-                regressor=Lasso(alpha=alpha, random_state=model_seed),
-                transformer=response_variable_pipeline
-            ))
-        ]
-    )
-
-    return pipeline
-
-
-def load_train_dataset(input_filepath=constants.DEFAULT_TRAIN_INPUT_PATH):
-    """Load our dataset used for training"""
-    return pd.read_csv(input_filepath)
-
-
-def split_dataset(
-    train_df: pd.DataFrame,
-    train_size: float=constants.DEFAULT_TRAIN_SET_SIZE,
-    split_seed: int=constants.DEFAULT_SPLIT_SEED
-):
-    """Split the dataset producing a training and test sets"""
-    return train_test_split(
-        train_df.drop([constants.TARGET_VARIABLE_NAME, 'Id'], axis=1),
-        train_df[constants.TARGET_VARIABLE_NAME],
-        train_size=train_size,
-        random_state=split_seed
-    )
-
-
-def train(
-    input_filepath: str=constants.DEFAULT_TRAIN_INPUT_PATH,
-    train_size: float=constants.DEFAULT_TRAIN_SET_SIZE,
-    split_seed: int=constants.DEFAULT_SPLIT_SEED,
-    rare_threshold=constants.DEFAULT_RARE_CATEGORIES_DROP_THRESHOLD,
-    alpha=constants.DEFAULT_LASSO_ALPHA,
-    model_seed=constants.DEFAULT_MODEL_SEED
-):
-    """Train the lasso regression"""
-    houses_df = load_train_dataset(input_filepath=input_filepath)
-
-    # split the dataset
-    X_train, _, y_train, _ = split_dataset(
-        train_df=houses_df,
-        train_size=train_size,
-        split_seed=split_seed
-    )
-
-    # create a pipeline to be fitted
-    pipeline = create_lasso_pipeline(rare_threshold, X_train, alpha, model_seed)
-
-    # fit the pipeline
-    pipeline.fit(X_train, y_train)
-
-    # store the pipeline
-
-
-def save_model(pipeline) -> str:
-    """A method to save the output path"""
-    model_name = f"lasso_{__version__}"
-    save_path = config.TRAINED_MODELS_DIR / f"{model_name}.pkl"
-    joblib.dump(pipeline, save_path)
-    return save_path
-
-
-def track_mlflow_model(model, model_name):
-    """Track the model in the mlflow model registry"""
-    tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
-    # Model registry does not work with file store
-    if tracking_url_type_store != "file":
-        # Register the model
-        # There are other ways to use the Model Registry, which depends on the use case,
-        # please refer to the doc for more information:
-        # https://mlflow.org/docs/latest/model-registry.html#api-workflow
-        mlflow.sklearn.log_model(
-            sk_model=model,
-            artifact_path=f"lasso_{__version__}",
-            registered_model_name=f"lasso_{__version__}"
-        )
-    else:
-        mlflow.sklearn.log_model(sk_model=model, artifact_path=model_name)
-
-
 @click.command()
 @click.argument(
     'input_filepath',
@@ -200,7 +81,6 @@ def main(
     input_filepath, alpha, model_seed, split_seed, train_size, rare_threshold
 ):
     """Main method for training the lasso model"""
-
     houses_df = load_train_dataset(input_filepath=input_filepath)
 
     # split the dataset
@@ -209,9 +89,6 @@ def main(
         train_size=train_size,
         split_seed=split_seed
     )
-
-    # to set some additional notes in mlflow tracking use:
-    # mlflow.note.content
 
     # start experiment tracking
     experiment = mlflow.set_experiment(experiment_name="houses_lasso_train")
@@ -251,6 +128,117 @@ def main(
         # save the lasso to the models registry
         save_path = save_model(pipeline)
         _logger.info("Saved the lasso pipeline at %s", save_path)
+
+
+def create_lasso_pipeline(rare_threshold, X_train, alpha, model_seed):
+    """Create a pipeline for the lasso regression"""
+    categoricals = X_train.columns.intersection(constants.CATEGORICAL_COLUMNS)
+    numericals = X_train.columns.intersection(constants.NUMERICAL_COLUMNS)
+
+    numeric_pipeline = Pipeline([
+        ('impute_with_mean', SimpleImputer(strategy='mean')),
+        ('scaling', StandardScaler()),
+        ('yeo_johnson', PowerTransformer())
+    ])
+
+    # transformations to be applied to categorical features
+    categoric_pipeline = Pipeline([
+        ('replace_rare', RareCategoriesReplacer(rare_threshold)),
+        ('one_hot_encoding', OneHotEncoder())
+    ])
+
+    # transformations on the response variable
+    response_variable_pipeline = Pipeline([
+        ('normalization', StandardScaler()),
+        ('yeo_johnson', PowerTransformer())
+    ])
+
+    all_transformations = ColumnTransformer(
+        transformers=[
+            ('numeriric_transformations', numeric_pipeline, numericals),
+            ('categoric_transformations', categoric_pipeline, categoricals),
+            ('ordinals_encoding', __ordinal_encoder, constants.ORDINALS)
+        ],
+        remainder='passthrough'
+    )
+
+    pipeline = Pipeline(
+        steps=[
+            ('column_transformations', all_transformations),
+            ('lasso_and_target_transform', TransformedTargetRegressor(
+                regressor=Lasso(alpha=alpha, random_state=model_seed),
+                transformer=response_variable_pipeline
+            ))
+        ]
+    )
+    return pipeline
+
+
+def load_train_dataset(input_filepath=constants.DEFAULT_TRAIN_INPUT_PATH):
+    """Load our dataset used for training"""
+    return pd.read_csv(input_filepath)
+
+
+def split_dataset(
+    train_df: pd.DataFrame,
+    train_size: float=constants.DEFAULT_TRAIN_SET_SIZE,
+    split_seed: int=constants.DEFAULT_SPLIT_SEED
+):
+    """Split the dataset producing a training and test sets"""
+    return train_test_split(
+        train_df.drop([constants.TARGET_VARIABLE_NAME, 'Id'], axis=1),
+        train_df[constants.TARGET_VARIABLE_NAME],
+        train_size=train_size,
+        random_state=split_seed
+    )
+
+
+def train(
+    input_filepath: str=constants.DEFAULT_TRAIN_INPUT_PATH,
+    train_size: float=constants.DEFAULT_TRAIN_SET_SIZE,
+    split_seed: int=constants.DEFAULT_SPLIT_SEED,
+    rare_threshold=constants.DEFAULT_RARE_CATEGORIES_DROP_THRESHOLD,
+    alpha=constants.DEFAULT_LASSO_ALPHA,
+    model_seed=constants.DEFAULT_MODEL_SEED
+):
+    """Train the lasso regression"""
+    houses_df = load_train_dataset(input_filepath=input_filepath)
+
+    # split the dataset
+    X_train, _, y_train, _ = split_dataset(
+        train_df=houses_df,
+        train_size=train_size,
+        split_seed=split_seed
+    )
+
+    pipeline = create_lasso_pipeline(rare_threshold, X_train, alpha, model_seed)
+    pipeline.fit(X_train, y_train)
+
+
+def save_model(pipeline) -> str:
+    """A method to save the output path"""
+    model_name = f"lasso_{__version__}"
+    save_path = config.TRAINED_MODELS_DIR / f"{model_name}.pkl"
+    joblib.dump(pipeline, save_path)
+    return save_path
+
+
+def track_mlflow_model(model, model_name):
+    """Track the model in the mlflow model registry"""
+    tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
+    # Model registry does not work with file store
+    if tracking_url_type_store != "file":
+        # Register the model
+        # There are other ways to use the Model Registry, which depends on the use case,
+        # please refer to the doc for more information:
+        # https://mlflow.org/docs/latest/model-registry.html#api-workflow
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            artifact_path=f"lasso_{__version__}",
+            registered_model_name=f"lasso_{__version__}"
+        )
+    else:
+        mlflow.sklearn.log_model(sk_model=model, artifact_path=model_name)
 
 
 if __name__ == "__main__":

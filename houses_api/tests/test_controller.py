@@ -15,7 +15,6 @@ from ..api.config import get_logger
 from ..api.config import TEST_DATASET_PATH
 
 
-
 _logger = get_logger(logger_name=__name__)
 
 def test_health_endpoint_returns_ok_status(test_client):
@@ -71,7 +70,6 @@ def test_prediction_endpoint_returns_prediction(test_client):
     assert response.status_code == 200
     response_json = json.loads(response.data)
     prediction = response_json['predictions']
-    print(response_json)
     response_version = response_json['version']
     assert math.ceil(prediction[0]) == 117205
     assert response_version == _model_version
