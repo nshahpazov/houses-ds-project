@@ -32,6 +32,7 @@ commands:
       - run: |
           apt-get update && apt-get install make
           apt-get update -y
+          apt-get install unzip
   run_tests:
     steps:
       - run: |
