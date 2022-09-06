@@ -35,7 +35,7 @@ commands:
 
   run_tests:
     steps:
-      - run: make test
+      - run: pytest .
 
 jobs:
   setup_and_run_tests:
