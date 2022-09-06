@@ -28,26 +28,14 @@ commands:
     steps:
       - run: |
           make say_hello
-
-  create_conda_environment:
-    steps:
-      - run: |
-          conda init bash
-          source ~/.bashrc
-          conda env create -f environment.yml
-
-  activate_conda_environment:
-    steps:
-      - run: |
-          conda init bash
-          source ~/.bashrc
-          conda activate houses
   update:
+    name: update_and_install_make
     steps:
       - run: |
           apt-get update && apt-get install make
 
   run_tests:
+    name: run_tests
     steps:
       - activate_conda_environment
       - run: |
@@ -69,7 +57,7 @@ jobs:
       - prepare_virtual_environment
       - install_requirements
       # - create_conda_environment
-      # - run_tests
+      - run_tests
 
 # TODO: add build workflow
 workflows:
