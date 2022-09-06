@@ -35,7 +35,9 @@ commands:
 
   run_tests:
     steps:
-      - run: pytest .
+      - run: |
+          . venv/bin/activate
+          make test
 
 jobs:
   setup_and_run_tests:
