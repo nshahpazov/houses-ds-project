@@ -26,6 +26,18 @@ install:
 install_develop:
 	pip install -e ./
 
+
+release:
+    $(eval v := $(shell git describe --tags --abbrev=0 | sed -Ee 's/^v|-.*//'))
+ifeq ($(bump), major)
+    $(eval f := 1)
+else ifeq ($(bump), minor)
+    $(eval f := 2)
+else
+    $(eval f := 3)
+endif
+    @echo $(v) | awk -F. -v OFS=. -v f=$(f) '{ $$f++ } 1'
+
 clean:
 	@echo "Cleaning up $(project_name)"
 	@rm -rf *.egg-info

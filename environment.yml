@@ -17,6 +17,7 @@ dependencies:
   - codecov
   - pytest=7.1.2
   - marshmallow=3.17.1
+  - make=4.3
   - pre-commit=2.20.0
   - pylint=2.14.0
   # jupyter and visualization
