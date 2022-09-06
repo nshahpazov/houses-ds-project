@@ -16,7 +16,6 @@ commands:
 
   run_tests:
     steps:
-      - activate_conda
       - run: make test
 
 jobs:
@@ -38,4 +37,3 @@ workflows:
       - setup_and_run_tests:
           context:
             - kaggling
-
