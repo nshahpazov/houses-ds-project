@@ -1,3 +1,5 @@
+say_hello:
+	@echo "Helloooooooooooooooooooooooo"
 test:
 	@pytest .
 

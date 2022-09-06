@@ -3,9 +3,26 @@ version: 2.1
 executors:
   docker-conda-executor:
     docker:
-      - image: continuumio/miniconda3:latest
+      - image: circleci/python:3.9.5
 
 commands:
+  prepare_virtual_environment:
+    steps:
+      - run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+
+  prepare_tox:
+    steps:
+      - run: |
+          sudo pip install --upgrade pip
+          pip install --user tox
+  say_hello:
+    steps:
+      - run: |
+          make say_hello
+
   create_conda_environment:
     steps:
       - run: |
@@ -38,8 +55,9 @@ jobs:
       - image: continuumio/miniconda3:latest
     steps:
       - checkout
-      - create_conda_environment
-      - run_tests
+      - say_hello
+      # - create_conda_environment
+      # - run_tests
 
 # TODO: add build workflow
 workflows:
