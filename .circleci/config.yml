@@ -57,7 +57,7 @@ jobs:
       - prepare_virtual_environment
       - install_requirements
       # - create_conda_environment
-      - run_tests
+      # - run_tests
 
 # TODO: add build workflow
 workflows:
