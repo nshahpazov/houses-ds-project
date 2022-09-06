@@ -6,17 +6,21 @@ executors:
       - image: continuumio/miniconda3:latest
 
 commands:
-  activate_conda:
+  create_conda_environment:
     steps:
       - run: |
           conda init bash
           source ~/.bashrc
           conda env create -f environment.yml
-          conda activate houses
+
+  activate_conda_environment:
+    steps:
+      - run: conda activate houses
+
 
   run_tests:
     steps:
-      - activate_conda
+      - activate_conda_environment
       - run: make test
 
 jobs:
@@ -27,7 +31,7 @@ jobs:
       - image: continuumio/miniconda3:latest
     steps:
       - checkout
-      - activate_conda
+      - create_conda_environment
       - run_tests
 
 # TODO: add build workflow
@@ -38,3 +42,4 @@ workflows:
       - setup_and_run_tests:
           context:
             - kaggling
+            - gemfury
