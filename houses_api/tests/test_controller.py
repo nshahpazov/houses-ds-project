@@ -59,7 +59,8 @@ def test_prediction_endpoint_returns_prediction(test_client):
     preprocess("data/raw/test.csv", "data/interim/test.csv")
 
     # train a model
-    lasso.train()
+    model = lasso.train()
+    lasso.save_model(model)
 
     test_data = pd.read_csv(TEST_DATASET_PATH)
     post_json = test_data[0:1].to_json(orient='records')

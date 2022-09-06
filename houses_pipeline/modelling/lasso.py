@@ -213,6 +213,9 @@ def train(
 
     pipeline = create_lasso_pipeline(rare_threshold, X_train, alpha, model_seed)
     pipeline.fit(X_train, y_train)
+    save_model(pipeline)
+
+    return pipeline
 
 
 def save_model(pipeline) -> str:
