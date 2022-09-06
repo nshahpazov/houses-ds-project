@@ -21,3 +21,4 @@ models/*.pkl
 logs/*.log*
 !logs/.gitkeep
 venv
+pipeline_venv

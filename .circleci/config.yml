@@ -6,39 +6,38 @@ executors:
       - image: circleci/python:3.9.5
 
 commands:
-  prepare_virtual_environment:
+  prepare_pipeline_virtual_environment:
     steps:
       - run: |
-          python3 -m venv venv
-          source venv/bin/activate
+          python3 -m venv pipeline_venv
+          source pipeline_venv/bin/activate
           pip install --upgrade pip
 
-  install_requirements:
+  install_pipeline_requirements:
     steps:
       - run: |
-          . venv/bin/activate
+          . pipeline_venv/bin/activate
           pip install -r houses_pipeline/requirements.txt
-          pip install -r houses_api/requirements.txt
 
   prepare_tox:
     steps:
       - run: |
-          python3 -m venv venv
-          source venv/bin/activate
           sudo pip install --upgrade pip
           pip install --user tox
+
   update:
     steps:
       - run: |
-          apt-get update && apt-get install make
           apt-get update -y
+          apt-get install make
           apt-get install unzip
-  run_tests:
+
+  run_houses_pipeline_tests:
+    description: "Run houses_pipeline tests"
     steps:
       - run: |
-          python3 -m venv venv
-          source venv/bin/activate
-          make test
+          . pipeline_venv/bin/activate
+          pytest houses_pipeline
 
 jobs:
   setup_and_run_tests:
@@ -49,9 +48,10 @@ jobs:
     steps:
       - checkout
       - update
-      - prepare_virtual_environment
-      - install_requirements
-      - run_tests
+
+      - prepare_pipeline_virtual_environment
+      - install_pipeline_requirements
+      - run_houses_pipeline_tests
 
 workflows:
   version: 2
