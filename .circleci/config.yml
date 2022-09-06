@@ -29,20 +29,13 @@ commands:
       - run: |
           make say_hello
   update:
-    name: update_and_install_make
     steps:
       - run: |
           apt-get update && apt-get install make
 
   run_tests:
-    name: run_tests
     steps:
-      - activate_conda_environment
-      - run: |
-          conda init bash
-          source ~/.bashrc
-          conda activate houses
-          make test
+      - run: make test
 
 jobs:
   setup_and_run_tests:
@@ -57,7 +50,7 @@ jobs:
       - prepare_virtual_environment
       - install_requirements
       # - create_conda_environment
-      # - run_tests
+      - run_tests
 
 # TODO: add build workflow
 workflows:
