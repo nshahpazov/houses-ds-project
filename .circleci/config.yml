@@ -16,6 +16,7 @@ commands:
 
   run_tests:
     steps:
+      - activate_conda
       - run: make test
 
 jobs:
