@@ -17,12 +17,6 @@ from .. import constants
 
 _logger = LoggingHandler.get_logger(__name__)
 
-# load the preprocessor
-preprocessor = load_preprocess_pipeline()
-
-# load the model
-lasso_model_filnename = f"{config.LASSO_SAVE_FILENAME}_{__version__}.pkl"
-lasso_model = load_model(model_name=lasso_model_filnename)
 
 
 def predict(*, input_data: Union[pd.DataFrame, dict]) -> dict:
@@ -34,6 +28,12 @@ def predict(*, input_data: Union[pd.DataFrame, dict]) -> dict:
     Returns:
         Predictions for each input row, as well as the model version.
     """
+    # load the preprocessor
+    preprocessor = load_preprocess_pipeline()
+
+    # load the model
+    lasso_model_filnename = f"{config.LASSO_SAVE_FILENAME}_{__version__}.pkl"
+    lasso_model = load_model(model_name=lasso_model_filnename)
 
     # load the data and validate it
     input_df = pd.DataFrame(input_data)
