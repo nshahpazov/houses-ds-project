@@ -17,41 +17,41 @@ commands:
   prepare_pipeline_virtual_environment:
     description: "Preparing the pipeline virtual environment"
     steps:
+          # python3 -m venv venv
+          # source venv/bin/activate
       - run: |
-          python3 -m venv venv
-          source venv/bin/activate
           pip install --upgrade pip
 
   install_pipeline_requirements:
     description: "Installing pipeline requirements"
     steps:
+          # source venv/bin/activate
+          # . venv/bin/activate
       - run: |
-          source venv/bin/activate
-          . venv/bin/activate
           pip install -r requirements.txt
 
   run_pipeline_lint:
     description: "Run pipeline linting"
     steps:
+          # source venv/bin/activate
+          # . venv/bin/activate
       - run: |
-          source venv/bin/activate
-          . venv/bin/activate
           pylint houses_pipeline
   
   run_pipeline_tests:
     description: "Run pipeline tests"
     steps:
+          # source venv/bin/activate
+          # . venv/bin/activate
       - run: |
-          source venv/bin/activate
-          . venv/bin/activate
           pytest houses_pipeline
 
   train_and_publish_houses_model:
     description: "Train the houses model"
     steps:
+          # source venv/bin/activate
+          # . venv/bin/activate
       - run: |
-          source venv/bin/activate
-          . venv/bin/activate
           make publish
 
   prepare_api_virtual_environment:
@@ -89,7 +89,7 @@ jobs:
     steps:
       - checkout
       - update
-      - prepare_pipeline_virtual_environment
+      # - prepare_pipeline_virtual_environment
       - install_pipeline_requirements
       # - run_pipeline_lint
       - run_pipeline_tests
