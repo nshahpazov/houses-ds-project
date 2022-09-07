@@ -42,6 +42,8 @@ commands:
     description: "Run pipeline tests"
     steps:
       - run: |
+          source venv/bin/activate
+          . venv/bin/activate
           make test
 
   train_and_publish_houses_model:

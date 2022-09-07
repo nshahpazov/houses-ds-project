@@ -52,11 +52,9 @@ publish: train
 	./publish.sh .
 
 test:
-	. venv/bin/activate
 	@pytest .
 
 lint:
-	. venv/bin/activate
 	@pylint houses_pipeline
 
 # ignore the following
