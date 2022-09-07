@@ -2,3 +2,6 @@
 flask==2.2.2
 # schema validation
 marshmallow==3.17.1
+
+# tests
+pytest==7.1.2
