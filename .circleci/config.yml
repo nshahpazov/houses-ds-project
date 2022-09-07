@@ -85,9 +85,11 @@ commands:
 jobs:
   setup_and_test_houses_pipeline:
     executor: docker-python-executor
-    working_directory: ~/project/pipeline
+    working_directory: ~/project
     steps:
-      - checkout
+      - checkout:
+        - checkout:
+          path: ~/project/pipeline
       - update
       - prepare_pipeline_virtual_environment
       - install_pipeline_requirements
