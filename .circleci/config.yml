@@ -36,7 +36,7 @@ commands:
       - run: |
           source venv/bin/activate
           . venv/bin/activate
-          make lint
+          pylint houses_pipeline
   
   run_pipeline_tests:
     description: "Run pipeline tests"
