@@ -17,26 +17,39 @@ commands:
   prepare_pipeline_virtual_environment:
     description: "Preparing the pipeline virtual environment"
     steps:
-      - run:
-        name: "Mambo Jambo"
-          command: |
-              python3 -m venv pipeline_venv
-              source pipeline_venv/bin/activate
-              pip install --upgrade pip
+      - run: |
+          python3 -m venv pipeline_venv
+          source pipeline_venv/bin/activate
+          pip install --upgrade pip
 
   install_pipeline_requirements:
     description: "Installing pipeline requirements"
     steps:
       - run: |
           . pipeline_venv/bin/activate
-          pip install -r houses_pipeline/requirements.txt
+          pip install -r requirements.txt
 
+  run_pipeline_lint:
+    description: "Run pipeline linting"
+    steps:
+      - run: |
+          . pipeline_venv/bin/activate
+          make lint
+  
   run_pipeline_tests:
     description: "Run pipeline tests"
     steps:
       - run: |
           . pipeline_venv/bin/activate
-          pytest houses_pipeline
+          make test
+
+  train_and_publish_houses_model:
+    description: "Train the houses model"
+    steps:
+      - run: |
+          . pipeline_venv/bin/activate
+          make train
+          make publish
 
   prepare_api_virtual_environment:
     description: "Preparing the api virtual environment"
@@ -67,9 +80,9 @@ commands:
           pip install --user tox
 
 jobs:
-  setup_and_run_tests:
+  setup_and_test_houses_pipeline:
     executor: docker-python-executor
-    working_directory: ~/project
+    working_directory: ~/project/pipeline
     steps:
       - checkout
       - update
@@ -77,16 +90,37 @@ jobs:
       - prepare_pipeline_virtual_environment
       - install_pipeline_requirements
       - run_pipeline_tests
+
+  setup_and_test_houses_api:
+    executor: docker-python-executor
+    working_directory: ~/project/api
+    steps:
+      - checkout
+      - update
       # api testing and setting
       - prepare_api_virtual_environment
       - install_api_requirements
       - run_api_tests
 
+  train_and_upload_houses_model:
+    executor: docker-python-executor
+    working_directory: ~/project
+    steps:
+      - checkout
+      - update
+      - prepare_houses_virtual_environment
+      - install_houses_requirements
+      - train_houses_model
+
 workflows:
   version: 2
   houses_workflow:
     jobs:
-      - setup_and_run_tests:
+      - setup_and_test_houses_pipeline:
           context:
             - kaggling
             - gemfury
+      # - setup_and_test_houses_api:
+      #     context:
+      #       - kaggling
+      #       - gemfury

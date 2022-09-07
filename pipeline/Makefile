@@ -1,7 +1,7 @@
 # functionality
-train: preprocess
+train: clean preprocess
 	@echo "Training a model for the $(project_name) project"
-	@python modelling/lasso.py
+	@python -m modelling.lasso.py
 
 preprocess: fetch
 	@echo "Preprocessing the data for the $(project_name) project"
@@ -17,33 +17,32 @@ fetch:
 # package specific functionallity
 build_source:
 	@python setup.py sdist
+
 build_wheels:
 	@python setup.py bdist_wheel
+
 build_from_source:
 	@python setup.py build
+
 install:
 	@python setup.py install
+
 install_develop:
 	pip install -e ./
 
-
-release:
-    $(eval v := $(shell git describe --tags --abbrev=0 | sed -Ee 's/^v|-.*//'))
-ifeq ($(bump), major)
-    $(eval f := 1)
-else ifeq ($(bump), minor)
-    $(eval f := 2)
-else
-    $(eval f := 3)
-endif
-    @echo $(v) | awk -F. -v OFS=. -v f=$(f) '{ $$f++ } 1'
+publish:
+	./publish.sh .
 
 clean:
 	@echo "Cleaning up $(project_name)"
 	@rm -rf *.egg-info
 	@rm -rf $(raws_to_remove)
 	@rm -rf data/**/*.csv
+	@rm -rf models/**/*.pkl
 	@rm -rf logs/*.log*
+
+publish: train
+	./scripts/publish_model.sh .
 
 test:
 	@pytest .
