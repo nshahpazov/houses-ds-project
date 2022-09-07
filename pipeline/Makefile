@@ -52,6 +52,7 @@ publish: train
 	./publish.sh .
 
 test:
+	. venv/bin/activate
 	@pytest .
 
 lint:

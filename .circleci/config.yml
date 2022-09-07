@@ -87,6 +87,7 @@ jobs:
       - update
       - prepare_pipeline_virtual_environment
       - install_pipeline_requirements
+      - run_pipeline_lint
       - run_pipeline_tests
       - train_and_publish_houses_model
 
