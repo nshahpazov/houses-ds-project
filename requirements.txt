@@ -1,3 +1,0 @@
-
-# gemfury package
-# houses_pipeline==0.0.31
