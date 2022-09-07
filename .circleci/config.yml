@@ -42,9 +42,7 @@ commands:
     description: "Run pipeline tests"
     steps:
       - run: |
-          source venv/bin/activate
-          . venv/bin/activate
-          pytest houses_pipeline
+          make test
 
   train_and_publish_houses_model:
     description: "Train the houses model"
