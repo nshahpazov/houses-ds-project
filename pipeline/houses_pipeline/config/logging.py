@@ -11,7 +11,7 @@ import houses_pipeline
 # within the same module, but also across modules as long as
 # it is in the same Python interpreter process.
 
-PACKAGE_ROOT = pathlib.Path(houses_pipeline.__file__).resolve().parent
+PACKAGE_ROOT = pathlib.Path(houses_pipeline.__file__).resolve().parent.parent
 LOG_DIR = PACKAGE_ROOT / 'logs'
 VERSION_PATH = PACKAGE_ROOT / 'VERSION'
 LOG_FILE = LOG_DIR / 'pipeline.log'

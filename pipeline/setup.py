@@ -31,7 +31,8 @@ except FileNotFoundError:
 
 
 # Load the package's __version__.py module as a dictionary.
-PACKAGE_DIR = Path(__file__).resolve().parent
+ROOT_DIR = Path(__file__).resolve().parent
+PACKAGE_DIR = ROOT_DIR / 'houses_pipeline'
 about = {}
 
 with open(PACKAGE_DIR / 'VERSION', encoding='utf-8') as file:

@@ -18,59 +18,58 @@ commands:
     description: "Preparing the pipeline virtual environment"
     steps:
       - run: |
-          python3 -m venv pipeline_venv
-          source pipeline_venv/bin/activate
+          python3 -m venv venv
+          source venv/bin/activate
           pip install --upgrade pip
 
   install_pipeline_requirements:
     description: "Installing pipeline requirements"
     steps:
       - run: |
-          . pipeline_venv/bin/activate
+          . venv/bin/activate
           pip install -r requirements.txt
 
   run_pipeline_lint:
     description: "Run pipeline linting"
     steps:
       - run: |
-          . pipeline_venv/bin/activate
+          . venv/bin/activate
           make lint
   
   run_pipeline_tests:
     description: "Run pipeline tests"
     steps:
       - run: |
-          . pipeline_venv/bin/activate
+          . venv/bin/activate
           make test
 
   train_and_publish_houses_model:
     description: "Train the houses model"
     steps:
       - run: |
-          . pipeline_venv/bin/activate
-          make train
+          . venv/bin/activate
           make publish
 
   prepare_api_virtual_environment:
     description: "Preparing the api virtual environment"
     steps:
       - run: |
-          python3 -m venv api_venv
-          source api_venv/bin/activate
+          python3 -m venv venv
+          source venv/bin/activate
           pip install --upgrade pip
 
   install_api_requirements:
     description: "Installing API requirements"
     steps:
       - run: |
-          . api_venv/bin/activate
+          . venv/bin/activate
           pip install -r houses_api/requirements.txt
 
   run_api_tests:
     description: "Run api tests"
     steps:
       - run: |
-          . api_venv/bin/activate
+          . venv/bin/activate
           pytest houses_api
 
   prepare_tox:
@@ -86,7 +85,6 @@ jobs:
     steps:
       - checkout
       - update
-      # houses_pipeline testing and setting
       - prepare_pipeline_virtual_environment
       - install_pipeline_requirements
       - run_pipeline_tests
@@ -98,7 +96,6 @@ jobs:
     steps:
       - checkout
       - update
-      # api testing and setting
       - prepare_api_virtual_environment
       - install_api_requirements
       - run_api_tests
