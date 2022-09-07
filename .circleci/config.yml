@@ -90,6 +90,7 @@ jobs:
       - prepare_pipeline_virtual_environment
       - install_pipeline_requirements
       - run_pipeline_tests
+      - train_and_publish_houses_model
 
   setup_and_test_houses_api:
     executor: docker-python-executor
