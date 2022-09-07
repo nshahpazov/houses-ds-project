@@ -17,10 +17,12 @@ commands:
   prepare_pipeline_virtual_environment:
     description: "Preparing the pipeline virtual environment"
     steps:
-      - run: |
-          python3 -m venv pipeline_venv
-          source pipeline_venv/bin/activate
-          pip install --upgrade pip
+      - run:
+        name: "Mambo Jambo"
+          command: |
+              python3 -m venv pipeline_venv
+              source pipeline_venv/bin/activate
+              pip install --upgrade pip
 
   install_pipeline_requirements:
     description: "Installing pipeline requirements"
