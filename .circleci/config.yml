@@ -10,9 +10,9 @@ commands:
     description: "Installing ubuntu prerequisites"
     steps:
       - run: |
-          apt-get update -y
-          apt-get install make
-          apt-get install unzip
+          sudo apt-get update -y
+          sudo apt-get install make
+          sudo apt-get install unzip
 
   prepare_pipeline_virtual_environment:
     description: "Preparing the pipeline virtual environment"
