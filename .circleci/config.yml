@@ -89,7 +89,7 @@ jobs:
     steps:
       - checkout:
         - checkout:
-          path: ~/project/pipeline
+            path: ~/project/pipeline
       - update
       - prepare_pipeline_virtual_environment
       - install_pipeline_requirements
