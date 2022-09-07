@@ -2,6 +2,7 @@ include *.yaml
 include *.yml
 include MLProject
 include VERSION
+include models
 recursive-include houses_pipeline *.gitkeep
 recursive-include houses_pipeline *.py
 recursive-include houses_pipeline *.sh

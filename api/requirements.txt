@@ -1,0 +1,14 @@
+--index-url https://${FURY_AUTH}:@pypi.fury.io/nshahpazov/
+--extra-index-url https://pypi.org/simple houses_pipeline
+
+# api
+flask==2.2.2
+# schema validation
+marshmallow==3.17.1
+
+# # tests
+pytest==7.1.2
+
+# gemfury stored module
+houses_pipeline==0.0.31
+joblib==1.1.0

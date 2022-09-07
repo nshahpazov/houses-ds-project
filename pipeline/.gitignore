@@ -20,7 +20,3 @@ models/*.pkl
 
 logs/*.log*
 !logs/.gitkeep
-# virtual environments
-venv
-pipeline_venv
-api_venv

@@ -1,9 +1,30 @@
 """The main definition of our preprocessing steps"""
+import pandas as pd
+import numpy as np
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.impute import SimpleImputer
 from ..transformers import Pandalizer
 from .. import constants
+
+
+def preprocess(
+    input_filepath: str=constants.DEFAULT_PREPROCESS_INPUT_PATH,
+    output_filepath: str=constants.DEFAULT_PREPROCESS_OUTPUT_PATH,
+    verbose: bool=True
+) -> pd.DataFrame:
+    """Entire preprocessing step as a single python function"""
+    input_df = pd.read_csv(input_filepath)
+    pipeline = load_preprocess_pipeline(verbose=verbose)
+
+    # transform the data
+    to_impute = np.append(constants.CATEGORICAL_COLUMNS, constants.ORDINALS)
+    output_houses_dataframe = pipeline.fit_transform(
+        input_df,
+        impute_missing_categories__columns=to_impute
+    )
+    save_processed_df(output_houses_dataframe, output_filepath)
+    return output_houses_dataframe
 
 
 def load_preprocess_pipeline(verbose=False):
@@ -28,3 +49,10 @@ def load_preprocess_pipeline(verbose=False):
         verbose=verbose
     )
     return preprocess_pipeline
+
+
+def save_processed_df(df: pd.DataFrame, output_filepath: str) -> pd.DataFrame:
+    """Save the dataframe wrapper"""
+    # save the output to the specified path
+    df.to_csv(output_filepath, index=False)
+    return df

@@ -1,14 +1,18 @@
 """Controller setup for the testing context"""
-import os
 import json
 import math
 import pandas as pd
 from houses_pipeline import __version__ as _model_version
+from houses_pipeline.fetch import fetch_houses_dataset
+from houses_pipeline.preprocess.core import preprocess
+from houses_pipeline.modelling import lasso
+
+# from houses_pipeline.fetch import fetch_houses_dataset
+# from houses_pipeline.preprocess import preproces
 from .. import __version__ as _api_version
 
 from ..api.config import get_logger
 from ..api.config import TEST_DATASET_PATH
-
 
 
 _logger = get_logger(logger_name=__name__)
@@ -48,28 +52,25 @@ def test_prediction_endpoint_returns_prediction(test_client):
     across packages.
     """
 
-    # fetch data
-    os.system("./houses_pipeline/fetch/fetch_dataset.sh data/raw")
+    fetch_houses_dataset()
 
     # preprocess
-    os.system("python -m houses_pipeline.preprocess")
-    os.system(
-        "python -m houses_pipeline.preprocess data/raw/test.csv data/interim/test.csv"
-    )
+    preprocess("data/raw/train.csv", "data/interim/train.csv")
+    preprocess("data/raw/test.csv", "data/interim/test.csv")
 
-    # train a model
-    os.system("python -m houses_pipeline.modelling.train_lasso")
+    # train a model and save it
+    lasso.train()
 
     test_data = pd.read_csv(TEST_DATASET_PATH)
     post_json = test_data[0:1].to_json(orient='records')
     # when
+
     response = test_client.post('/predict/lasso', json=json.loads(post_json))
 
     # then
     assert response.status_code == 200
     response_json = json.loads(response.data)
     prediction = response_json['predictions']
-    print(response_json)
     response_version = response_json['version']
     assert math.ceil(prediction[0]) == 117205
     assert response_version == _model_version

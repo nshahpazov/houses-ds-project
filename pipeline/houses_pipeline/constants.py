@@ -64,3 +64,8 @@ VERBOSE_HELP = "Whether to print the steps of the pipeline"
 DROP_COLUMNS = ['GarageYrBlt', 'YrSold', 'Exterior2nd', 'PoolQC']
 
 TARGET_VARIABLE_NAME = "SalePrice"
+
+DEFAULT_SPLIT_SEED = 1
+DEFAULT_TRAIN_SET_SIZE = 0.8
+DEFAULT_LASSO_ALPHA = 0.05
+DEFAULT_MODEL_SEED = 1

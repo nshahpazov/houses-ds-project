@@ -1,75 +1,130 @@
 version: 2.1
 executors:
-  docker-conda-executor:
+  docker-python-executor:
     docker:
-      - image: continuumio/miniconda3:latest
+      - image: circleci/python:3.9.5
 
 commands:
-  activate_conda:
+  update:
+    description: "Installing ubuntu prerequisites"
     steps:
       - run: |
-          conda init bash
-          source ~/.bashrc
-          conda env create -f environment.yml
-          conda activate houses
-  run_tests:
-    steps:
-      - run: |
-          conda init bash
-          source ~/.bashrc
-          conda activate houses
-          pytest houses_pipeline
-          pytest houses_api
+          sudo apt-get update -y
+          sudo apt-get install make
+          sudo apt-get install unzip
 
-  train_lasso_model:
+  prepare_pipeline_virtual_environment:
+    description: "Preparing the pipeline virtual environment"
     steps:
-      - checkout
       - run: |
-          conda init bash
-          source ~/.bashrc
-          conda activate houses
-          python -m houses_pipeline.modelling.train_lasso
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
 
-  fetch_dataset:
+  install_pipeline_requirements:
+    description: "Installing pipeline requirements"
     steps:
-      - checkout
       - run: |
-          conda init bash
-          source ~/.bashrc
-          conda activate houses
-          chmod +x ./houses_pipeline/fetch/fetch_dataset.sh
-          ./houses_pipeline/fetch/fetch_dataset.sh data/raw
+          source venv/bin/activate
+          . venv/bin/activate
+          pip install -r requirements.txt
 
-  preprocess_data:
+  run_pipeline_lint:
+    description: "Run pipeline linting"
     steps:
-      - checkout
       - run: |
-          conda init bash
-          source ~/.bashrc
-          conda activate houses
-          python -m houses_pipeline.preprocess
+          source venv/bin/activate
+          . venv/bin/activate
+          pylint houses_pipeline
+  
+  run_pipeline_tests:
+    description: "Run pipeline tests"
+    steps:
+      - run: |
+          source venv/bin/activate
+          . venv/bin/activate
+          make test
+
+  train_and_publish_houses_model:
+    description: "Train the houses model"
+    steps:
+      - run: |
+          source venv/bin/activate
+          . venv/bin/activate
+          make publish
+
+  prepare_api_virtual_environment:
+    description: "Preparing the api virtual environment"
+    steps:
+      - run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+
+  install_api_requirements:
+    description: "Installing API requirements"
+    steps:
+      - run: |
+          . venv/bin/activate
+          pip install -r requirements.txt
+
+  run_api_tests:
+    description: "Run api tests"
+    steps:
+      - run: |
+          . venv/bin/activate
+          pytest .
+
+  prepare_tox:
+    steps:
+      - run: |
+          sudo pip install --upgrade pip
+          pip install --user tox
 
 jobs:
-  setup_and_run_tests:
-    executor: docker-conda-executor
-    working_directory: ~/project
-    docker:
-      - image: continuumio/miniconda3:latest
+  setup_and_test_houses_pipeline:
+    executor: docker-python-executor
+    working_directory: ~/project/pipeline
+    steps:
+      - checkout:
+          path: ~/project
+      - update
+      - prepare_pipeline_virtual_environment
+      - install_pipeline_requirements
+      - run_pipeline_lint
+      - run_pipeline_tests
+      - train_and_publish_houses_model
+
+  setup_and_test_houses_api:
+    executor: docker-python-executor
+    working_directory: ~/project/api
+    steps:
+      - checkout:
+          path: ~/project
+      - update
+      - prepare_api_virtual_environment
+      - install_api_requirements
+      - run_api_tests
+
+  train_and_upload_houses_model:
+    executor: docker-python-executor
+    working_directory: ~/project/pipeline
     steps:
       - checkout
-      - activate_conda
-      # - TODO: ADD this fetch_dataset
-      - fetch_dataset
-      - preprocess_data
-      - train_lasso_model
-      - run_tests
+      - update
+      - prepare_houses_virtual_environment
+      - install_houses_requirements
+      - train_houses_model
 
-# TODO: add build workflow
 workflows:
   version: 2
   houses_workflow:
     jobs:
-      - setup_and_run_tests:
+      - setup_and_test_houses_pipeline:
           context:
             - kaggling
-
+            - gemfury
+      - setup_and_test_houses_api:
+          context:
+            - kaggling
+            - gemfury

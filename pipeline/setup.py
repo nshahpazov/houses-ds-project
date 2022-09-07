@@ -14,12 +14,10 @@ EMAIL = 'nshahpazov@gmail.com'
 AUTHOR = 'Nikola Shahpazov'
 REQUIRES_PYTHON = '>=3.9.2'
 
-
 # def list_reqs(fname='requirements.txt'):
 #     """Packages that are required for this module to be executed"""
 #     with open(fname, encoding="utf-8") as descriptor:
 #         return descriptor.read().splitlines()
-
 
 here = os.path.abspath(os.path.dirname(__file__))
 
