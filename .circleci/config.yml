@@ -85,7 +85,7 @@ commands:
 jobs:
   setup_and_test_houses_pipeline:
     executor: docker-python-executor
-    working_directory: ~/project
+    working_directory: ~/project/pipeline
     steps:
       - checkout:
           path: ~/project/pipeline
@@ -108,7 +108,7 @@ jobs:
 
   train_and_upload_houses_model:
     executor: docker-python-executor
-    working_directory: ~/project
+    working_directory: ~/project/pipeline
     steps:
       - checkout
       - update
