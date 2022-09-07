@@ -44,7 +44,7 @@ commands:
       - run: |
           source venv/bin/activate
           . venv/bin/activate
-          make test
+          pytest houses_pipeline
 
   train_and_publish_houses_model:
     description: "Train the houses model"
