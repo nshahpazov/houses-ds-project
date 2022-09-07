@@ -6,6 +6,14 @@ executors:
       - image: circleci/python:3.9.5
 
 commands:
+  update:
+    description: "Installing ubuntu prerequisites"
+    steps:
+      - run: |
+          apt-get update -y
+          apt-get install make
+          apt-get install unzip
+
   prepare_pipeline_virtual_environment:
     description: "Preparing the pipeline virtual environment"
     steps:
@@ -43,31 +51,16 @@ commands:
           . api_venv/bin/activate
           pip install -r houses_api/requirements.txt
 
-  run_pipeline_tests:
-    description: "Run api tests"
-    steps:
-      - run: |
-          . api_venv/bin/activate
-          pytest houses_api
   prepare_tox:
     steps:
       - run: |
           sudo pip install --upgrade pip
           pip install --user tox
 
-  update:
-    description: "Installing ubuntu prerequisites"
-    steps:
-      - run: |
-          apt-get update -y
-          apt-get install make
-          apt-get install unzip
-
 jobs:
   setup_and_run_tests:
     executor: docker-python-executor
     working_directory: ~/project
-    
     steps:
       - checkout
       - update
