@@ -66,14 +66,14 @@ commands:
     steps:
       - run: |
           . venv/bin/activate
-          pip install -r houses_api/requirements.txt
+          pip install -r requirements.txt
 
   run_api_tests:
     description: "Run api tests"
     steps:
       - run: |
           . venv/bin/activate
-          pytest houses_api
+          pytest .
 
   prepare_tox:
     steps:
@@ -99,7 +99,8 @@ jobs:
     executor: docker-python-executor
     working_directory: ~/project/api
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
       - update
       - prepare_api_virtual_environment
       - install_api_requirements
@@ -123,7 +124,7 @@ workflows:
           context:
             - kaggling
             - gemfury
-      # - setup_and_test_houses_api:
-      #     context:
-      #       - kaggling
-      #       - gemfury
+      - setup_and_test_houses_api:
+          context:
+            - kaggling
+            - gemfury
