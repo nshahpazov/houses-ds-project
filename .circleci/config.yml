@@ -51,6 +51,13 @@ commands:
           . api_venv/bin/activate
           pip install -r houses_api/requirements.txt
 
+  run_api_tests:
+    description: "Run api tests"
+    steps:
+      - run: |
+          . api_venv/bin/activate
+          pytest houses_api
+
   prepare_tox:
     steps:
       - run: |
