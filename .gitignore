@@ -21,3 +21,5 @@ models/*.pkl
 
 logs/*.log*
 !logs/.gitkeep
+
+*/**/__pycache__
