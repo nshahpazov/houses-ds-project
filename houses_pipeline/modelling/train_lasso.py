@@ -100,6 +100,60 @@ def track_mlflow_model(model, model_name):
         mlflow.sklearn.log_model(sk_model=model, artifact_path=model_name)
 
 
+def track_mlflow_model(model, model_name):
+    """Track the model in the mlflow model registry"""
+    tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
+    # Model registry does not work with file store
+    if tracking_url_type_store != "file":
+        # Register the model
+        # There are other ways to use the Model Registry, which depends on the use case,
+        # please refer to the doc for more information:
+        # https://mlflow.org/docs/latest/model-registry.html#api-workflow
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            artifact_path=f"lasso_{__version__}",
+            registered_model_name=f"lasso_{__version__}"
+        )
+    else:
+        mlflow.sklearn.log_model(sk_model=model, artifact_path=model_name)
+
+
+def track_mlflow_model(model, model_name):
+    """Track the model in the mlflow model registry"""
+    tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
+    # Model registry does not work with file store
+    if tracking_url_type_store != "file":
+        # Register the model
+        # There are other ways to use the Model Registry, which depends on the use case,
+        # please refer to the doc for more information:
+        # https://mlflow.org/docs/latest/model-registry.html#api-workflow
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            artifact_path=f"lasso_{__version__}",
+            registered_model_name=f"lasso_{__version__}"
+        )
+    else:
+        mlflow.sklearn.log_model(sk_model=model, artifact_path=model_name)
+
+
+def track_mlflow_model(model, model_name):
+    """Track the model in the mlflow model registry"""
+    tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
+    # Model registry does not work with file store
+    if tracking_url_type_store != "file":
+        # Register the model
+        # There are other ways to use the Model Registry, which depends on the use case,
+        # please refer to the doc for more information:
+        # https://mlflow.org/docs/latest/model-registry.html#api-workflow
+        mlflow.sklearn.log_model(
+            sk_model=model,
+            artifact_path=f"lasso_{__version__}",
+            registered_model_name=f"lasso_{__version__}"
+        )
+    else:
+        mlflow.sklearn.log_model(sk_model=model, artifact_path=model_name)
+
+
 @click.command()
 @click.argument(
     'input_filepath',
@@ -187,6 +241,9 @@ def main(input_filepath, alpha, model_seed, split_seed, rare_threshold):
         save_path = config.TRAINED_MODELS_DIR / f"{model_name}.pkl"
         joblib.dump(pipeline, save_path)
         _logger.info("Saved the lasso pipeline at %s", save_path)
+
+
+
 
 
 if __name__ == "__main__":
